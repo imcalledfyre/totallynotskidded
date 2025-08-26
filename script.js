@@ -5,14 +5,16 @@ const searchBar = document.getElementById('searchBar');
 const sortOptions = document.getElementById('sortOptions');
 // https://www.jsdelivr.com/tools/purge
 const zonesurls = [
+    "https://v4assets.netlify.app/zones.json",
+    "http://fyrenetworkassets.vonar.ch/zones.json",
     "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json",
     "https://cdn.jsdelivr.net/gh/gn-math/assets@latest/zones.json",
     "https://cdn.jsdelivr.net/gh/gn-math/assets@master/zones.json",
     "https://cdn.jsdelivr.net/gh/gn-math/assets/zones.json"
 ];
 let zonesURL = zonesurls[Math.floor(Math.random() * zonesurls.length)];
-const coverURL = "https://cdn.jsdelivr.net/gh/gn-math/covers@main";
-const htmlURL = "https://cdn.jsdelivr.net/gh/gn-math/html@main";
+const coverURL = "http://fyrenetworkassets.vonar.ch/covers";
+const htmlURL = "http://fyrenetworkassets.vonar.ch/html";
 let zones = [];
 let popularityData = {};
 const featuredContainer = document.getElementById('featuredZones');
@@ -20,14 +22,14 @@ async function listZones() {
     try {
       let sharesponse;
         try {
-          sharesponse = await fetch("https://api.github.com/repos/gn-math/assets/commits?t="+Date.now());
+          sharesponse = await fetch("https://api.github.com/repos/imcalledfyre/fg-assets/commits?t="+Date.now());
         } catch (error) {}
         if (sharesponse && sharesponse.status === 200) {
           try {
             const shajson = await sharesponse.json();
             const sha = shajson[0]['sha'];
             if (sha) {
-                zonesURL = `https://cdn.jsdelivr.net/gh/gn-math/assets@${sha}/zones.json`;
+                zonesURL = `https://cdn.jsdelivr.net/gh/imcalledfyre/fg-assets@${sha}/zones.json`;
             }
           } catch (error) {}
         }
@@ -62,7 +64,7 @@ async function listZones() {
                             popup.style.boxShadow = "0px 0px 10px rgba(0,0,0,0.1)";
                             popup.style.fontFamily = "Arial, sans-serif";
                             
-                            popup.innerHTML = `Play more games at <a href="https://gn-math.github.io" target="_blank" style="color:#004085; font-weight:bold;">https://gn-math.github.io</a>!`;
+                            popup.innerHTML = `Thanks for using Fyre Games!`;
                             
                             const closeBtn = document.createElement("button");
                             closeBtn.innerText = "✖";
@@ -99,7 +101,7 @@ async function listZones() {
 }
 async function fetchPopularity() {
     try {
-        const response = await fetch("https://data.jsdelivr.com/v1/stats/packages/gh/gn-math/html@main/files?period=year");
+        const response = await fetch("https://data.jsdelivr.com/v1/stats/packages/gh/imcalledfyre/html@main/files?period=year");
         const data = await response.json();
         data.forEach(file => {
             const idMatch = file.name.match(/\/(\d+)\.html$/);
@@ -530,7 +532,7 @@ function cloakIcon(url) {
 }
 function cloakName(string) {
     if ((string+"").trim().length === 0) {
-        document.title = "gn-math";
+        document.title = "Fyre Network";
         return;
     }
     document.title = string;
@@ -583,9 +585,8 @@ function loadPrivacy() {
         <div style="max-height: 60vh; overflow-y: auto;">
             <h2>PRIVACY POLICY</h2>
             <p>Last updated April 17, 2025</p>
-            <p>This Privacy Notice for gn-math ("we," "us," or "our"), describes how and why we might access, collect, store, use, and/or share ("process") your personal information when you use our services ("Services"), including when you:</p>
+            <p>This Privacy Notice for Fyre Network ("we," "us," or "our"), describes how and why we might access, collect, store, use, and/or share ("process") your personal information when you use our services ("Services"), including when you:</p>
             <ul>
-                <li>Visit our website at <a href="https://gn-math.github.io">https://gn-math.github.io</a>, or any website of ours that links to this Privacy Notice</li>
                 <li>Engage with us in other related ways, including any sales, marketing, or events</li>
             </ul>
             <p>Questions or concerns? Reading this Privacy Notice will help you understand your privacy rights and choices. We are responsible for making decisions about how your personal information is processed. If you do not agree with our policies and practices, please do not use our Services. If you still have any questions or concerns, please contact us at <a href="https://discord.gg/NAFw4ykZ7n">https://discord.gg/NAFw4ykZ7n</a>.</p>
@@ -646,4 +647,5 @@ XMLHttpRequest.prototype.open = function (method, url) {
 
 HTMLCanvasElement.prototype.toDataURL = function (...args) {
     return "";
+
 };

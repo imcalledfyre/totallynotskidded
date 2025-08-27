@@ -95,6 +95,17 @@ async function listZones() {
         container.innerHTML = `Error loading zones: ${error}`;
     }
 }
+function openPopup(title, content) {
+    const overlay = document.getElementById('popupOverlay');
+    document.getElementById('popupTitle').textContent = title;
+    document.getElementById('popupBody').innerHTML = content;
+    overlay.style.display = 'flex';
+}
+
+function closePopup() {
+    document.getElementById('popupOverlay').style.display = 'none';
+}
+
 async function fetchPopularity() {
     try {
         const response = await fetch("https://data.jsdelivr.com/v1/stats/packages/gh/imcalledfyre/html@main/files?period=year");
@@ -645,6 +656,7 @@ HTMLCanvasElement.prototype.toDataURL = function (...args) {
     return "";
 
 };
+
 
 
 

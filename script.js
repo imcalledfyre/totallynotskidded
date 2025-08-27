@@ -9,8 +9,8 @@ const zonesurls = [
     "https://fyreassets67.vonar.ch/zones.json"
 ];
 let zonesURL = zonesurls[Math.floor(Math.random() * zonesurls.length)];
-const coverURL = "https://fyreassets67.vonar.ch/covers";
-const htmlURL = "https://fyreassets67.vonar.ch/html";
+const coverURL = "https://cdn.jsdelivr.net/gh/gn-math/covers@main";
+const htmlURL = "https://fyreassets67.vonar.ch/";
 let zones = [];
 let popularityData = {};
 const featuredContainer = document.getElementById('featuredZones');
@@ -645,4 +645,5 @@ HTMLCanvasElement.prototype.toDataURL = function (...args) {
     return "";
 
 };
+
 

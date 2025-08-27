@@ -217,6 +217,14 @@
   appendRow('info', ['In‑Page Console loaded. Press \\ to toggle.']);
 })();
         </script>
+        <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(() => {
+    console.log('Service worker active: caching everything except HTML for 14 days!');
+  });
+}
+</script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

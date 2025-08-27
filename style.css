@@ -126,13 +126,13 @@ header {
     color: var(--text);
     font-size: 15px;
     outline: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     box-shadow: var(--shadow-sm);
 }
 
 #searchBar:focus {
     background: var(--text);
-    box-shadow: 0 0 0 3px rgba(252, 38, 81, 0.25), var(--shadow);
+    box-shadow: var(--shadow-glow);
     transform: translateY(-1px);
     color: var(--glass);
 }
@@ -151,7 +151,7 @@ header {
     font-size: 15px;
     cursor: pointer;
     outline: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     min-width: 130px;
     box-shadow: var(--shadow-sm);
 }
@@ -159,7 +159,7 @@ header {
 #sortOptions:hover {
     background: var(--text);
     transform: translateY(-1px);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-glow);
     color: var(--glass);
 }
 
@@ -176,19 +176,20 @@ header {
     cursor: pointer;
     padding: 0.75rem;
     border-radius: var(--radius);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     width: 44px;
     height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-sm);
 }
 
 #settings:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: translateY(-1px);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-glow);
 }
 
 main {
@@ -228,7 +229,7 @@ main {
     border-radius: var(--radius-lg);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s ease;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -242,18 +243,7 @@ main {
 }
 
 .zone-item:hover::before {
-    opacity: 1;
-}
-
-.zone-item::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--primary-light);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-    z-index: 1;
+    opacity: 0.2;
 }
 
 .zone-item img {
@@ -262,7 +252,7 @@ main {
     object-fit: cover;
     display: block;
     background: var(--border-light);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s ease;
 }
 
 .zone-item:hover img {
@@ -279,7 +269,7 @@ main {
     font-size: 14px;
     line-height: 1.4;
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     min-height: 70px;
     display: flex;
     align-items: center;
@@ -290,7 +280,7 @@ main {
 
 .zone-item:hover button {
     color: var(--primary);
-    background: rgba(252, 38, 81, 0.05);
+    background: var(--primary-light);
 }
 
 #zoneViewer {
@@ -300,16 +290,7 @@ main {
     z-index: 1000;
     display: none;
     flex-direction: column;
-    animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes slideInUp {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(0);
-    }
+    animation: slideInUp 0.3s ease;
 }
 
 .zone-header {
@@ -365,15 +346,16 @@ main {
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-sm);
 }
 
 .zone-controls button:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-1px);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-glow);
 }
 
 #zoneFrame {
@@ -396,15 +378,6 @@ main {
     animation: fadeIn 0.3s ease;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
 .popup {
     background: var(--surface);
     border-radius: var(--radius-lg);
@@ -416,18 +389,7 @@ main {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border);
-    animation: slideInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes slideInScale {
-    from {
-        transform: scale(0.9) translateY(20px);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1) translateY(0);
-        opacity: 1;
-    }
+    animation: slideInScale 0.3s ease;
 }
 
 .popup-header {
@@ -453,7 +415,7 @@ main {
     cursor: pointer;
     padding: 0.5rem;
     border-radius: var(--radius);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     line-height: 1;
     width: 36px;
     height: 36px;
@@ -461,11 +423,13 @@ main {
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-sm);
 }
 
 #popupClose:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.1);
+    box-shadow: var(--shadow-glow);
 }
 
 #popupBody {
@@ -484,14 +448,14 @@ main {
     background: var(--bg-secondary);
     color: var(--text);
     font-size: 15px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     outline: none;
 }
 
 #popupBody input[type="text"]:focus,
 #popupBody input[type="file"]:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(252, 38, 81, 0.1);
+    box-shadow: var(--shadow-glow);
     transform: translateY(-1px);
 }
 
@@ -506,7 +470,7 @@ main {
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 1rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     box-shadow: var(--shadow-sm);
 }
 
@@ -539,7 +503,7 @@ footer {
     text-decoration: none;
     font-weight: 600;
     font-size: 15px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     padding: 0.5rem 1rem;
     border-radius: var(--radius);
 }
@@ -598,3 +562,8 @@ footer {
         transform: translateY(-4px) scale(1.01);
     }
 }
+
+/* Animations */
+@keyframes slideInUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes slideInScale { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

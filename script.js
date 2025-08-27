@@ -6,15 +6,11 @@ const sortOptions = document.getElementById('sortOptions');
 // https://www.jsdelivr.com/tools/purge
 const zonesurls = [
     "https://v4assets.netlify.app/zones.json",
-    "http://fyrenetworkassets.vonar.ch/zones.json",
-    "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json",
-    "https://cdn.jsdelivr.net/gh/gn-math/assets@latest/zones.json",
-    "https://cdn.jsdelivr.net/gh/gn-math/assets@master/zones.json",
-    "https://cdn.jsdelivr.net/gh/gn-math/assets/zones.json"
+    "https://fyreassets67.vonar.ch/zones.json"
 ];
 let zonesURL = zonesurls[Math.floor(Math.random() * zonesurls.length)];
-const coverURL = "http://fyrenetworkassets.vonar.ch/covers";
-const htmlURL = "http://fyrenetworkassets.vonar.ch/html";
+const coverURL = "https://fyreassets67.vonar.ch/covers";
+const htmlURL = "https://fyreassets67.vonar.ch/html";
 let zones = [];
 let popularityData = {};
 const featuredContainer = document.getElementById('featuredZones');
@@ -649,3 +645,4 @@ HTMLCanvasElement.prototype.toDataURL = function (...args) {
     return "";
 
 };
+

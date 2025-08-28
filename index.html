@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-    <script>// In-Page Console — drop this in your site and press "\\" to toggle
-// zero deps, Shadow DOM isolated, draggable + resizable
+   <script>
 (function () {
-  if (window.__siteConsole) return; // don't double-inject
+  if (window.__siteConsole) return;
 
-  const ORIG = {
-    log: console.log,
-    warn: console.warn,
-    error: console.error,
-    info: console.info,
-  };
+  const ORIG = { log: console.log, warn: console.warn, error: console.error, info: console.info };
 
-  // Create root + shadow
   const host = document.createElement('div');
   host.id = '__inpage_console_root';
   host.style.all = 'initial';
   host.style.position = 'fixed';
-  host.style.zIndex = 2147483647; // top me daddy
+  host.style.zIndex = 2147483647;
   host.style.inset = 'auto 16px 16px auto';
   document.documentElement.appendChild(host);
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Styles (scoped)
   const style = document.createElement('style');
   style.textContent = `
     :host { all: initial; }
-    * { box-sizing: border-box; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .wrap { display: none; width: min(640px, 95vw); height: min(360px, 70vh); background: #0f0f12; color: #eaeaea; border: 1px solid #2a2a33; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.5); overflow: hidden; resize: both; }
-    .wrap.show { display: grid; grid-template-rows: 40px 1fr 36px; }
+    * { box-sizing: border-box; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .wrap { 
+      width: min(640px, 95vw); height: min(360px, 70vh); 
+      background: #0f0f12; color: #eaeaea; border: 1px solid #2a2a33;
+      border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+      overflow: hidden; resize: both; position: relative;
+      transform: translateX(120%); opacity: 0;
+      transition: transform .4s cubic-bezier(.4,0,.2,1), opacity .4s;
+    }
+    .wrap.show { transform: translateX(0); opacity: 1; }
     .bar { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 10px; background: linear-gradient(180deg,#15151a,#111117); cursor: move; user-select: none; border-bottom: 1px solid #22232b; }
     .title { font-size: 12px; opacity: .8; letter-spacing: .08em; text-transform: uppercase; }
     .buttons { margin-left: auto; display: flex; gap: 6px; }
@@ -48,30 +47,26 @@
     .input:focus { border-color: #3a3b46; }
     .kbd { opacity:.6; font-size:11px; }
     .hint { color:#a1a1ad; font-size: 11px; }
-    .copyable { cursor: copy; }
-    .copyable:active { opacity:.6; }
   `;
   shadow.appendChild(style);
 
-  // Structure
   const wrap = document.createElement('div');
   wrap.className = 'wrap';
   wrap.innerHTML = `
     <div class="bar">
-      <div class="title">In‑Page Console</div>
-      <div class="hint">press <span class="kbd">\\</span> to toggle</div>
+      <div class="title">Debug Console</div>
+      <div class="hint">press <span class="kbd">\\</span></div>
       <div class="buttons">
         <button class="btn" data-act="clear">Clear</button>
+        <button class="btn" data-act="cache">Cache Info</button>
         <button class="btn" data-act="save">Save</button>
         <button class="btn" data-act="close">Close</button>
       </div>
     </div>
     <div class="log" part="log"></div>
     <div class="foot">
-      <input class="input" part="input" placeholder="Type JS and hit Enter… (Shift+Enter for newline)" spellcheck="false" />
-      <div style="display:flex; gap:6px; align-items:center;">
-        <button class="btn" data-act="run">Run</button>
-      </div>
+      <input class="input" placeholder="Type JS & hit Enter…" spellcheck="false" />
+      <button class="btn" data-act="run">Run</button>
     </div>
   `;
   shadow.appendChild(wrap);
@@ -96,83 +91,50 @@
       const dx = e.clientX - startX; const dy = e.clientY - startY;
       host.style.left = (startLeft + dx) + 'px';
       host.style.top = (startTop + dy) + 'px';
-      host.style.right = 'auto'; host.style.bottom = 'auto';
     });
     window.addEventListener('mouseup', () => dragging = false);
   })();
 
-  // History
   const history = [];
   let histIdx = -1;
 
-  // Helpers
-  function ts() {
-    const d = new Date();
-    return d.toTimeString().slice(0,8);
-  }
-  function toRenderable(v) {
-    try {
-      if (typeof v === 'string') return v;
-      if (v instanceof Error) return v.stack || String(v);
-      return typeof v === 'object' ? JSON.stringify(v, replacer, 2) : String(v);
-    } catch { return String(v); }
-  }
-  function replacer(key, value) {
-    if (value && typeof value === 'object') {
-      if (seen.has(value)) return '[Circular]';
-      seen.add(value);
-    }
-    return value;
-  }
-  let seen = new WeakSet();
+  function ts() { return new Date().toTimeString().slice(0,8); }
   function appendRow(type, args) {
-    const row = document.createElement('div');
-    row.className = 'row';
-    const time = document.createElement('div'); time.className = 'time'; time.textContent = ts();
-    const badge = document.createElement('div'); badge.className = 'type ' + type; badge.textContent = type;
-    const msg = document.createElement('div'); msg.className = 'msg copyable';
-    seen = new WeakSet();
-    const text = args.map(toRenderable).join(' ');
-    msg.textContent = text;
-    msg.title = 'Click to copy';
-    msg.addEventListener('click', () => navigator.clipboard && navigator.clipboard.writeText(text).catch(()=>{}));
-    row.appendChild(time); row.appendChild(badge); row.appendChild(msg);
+    const row = document.createElement('div'); row.className = 'row';
+    const time = `<div class="time">${ts()}</div>`;
+    const badge = `<div class="type ${type}">${type}</div>`;
+    const msg = `<div class="msg">${args.join(' ')}</div>`;
+    row.innerHTML = time + badge + msg;
     logEl.appendChild(row);
     logEl.scrollTop = logEl.scrollHeight;
   }
 
-  // Patch console
-  console.log = function (...a) { appendRow('log', a); ORIG.log.apply(console, a); };
-  console.info = function (...a) { appendRow('info', a); ORIG.info.apply(console, a); };
-  console.warn = function (...a) { appendRow('warn', a); ORIG.warn.apply(console, a); };
-  console.error = function (...a) { appendRow('error', a); ORIG.error.apply(console, a); };
+  console.log = (...a) => { appendRow('log', a); ORIG.log(...a); };
+  console.info = (...a) => { appendRow('info', a); ORIG.info(...a); };
+  console.warn = (...a) => { appendRow('warn', a); ORIG.warn(...a); };
+  console.error = (...a) => { appendRow('error', a); ORIG.error(...a); };
 
-  // Evaluate input
-  let lastResult;
   function run(code) {
     if (!code.trim()) return;
     history.push(code); histIdx = history.length;
     appendRow('log', ['> ' + code]);
     try {
-      // new Function for statements + expressions
-      const res = new Function('console','_', 'with (window) { return (function(){' + code + '\n})(); }')(console, lastResult);
-      if (res !== undefined) { appendRow('info', [res]); lastResult = res; }
+      const res = new Function('console', 'with (window) { return (function(){' + code + '\n})(); }')(console);
+      if (res !== undefined) appendRow('info', [String(res)]);
     } catch (err) {
       appendRow('error', [err]);
     }
   }
 
-  // Keyboard handling inside input
   inputEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); run(inputEl.value); inputEl.value=''; return; }
-    if (e.key === 'ArrowUp') { if (histIdx > 0) { histIdx--; inputEl.value = history[histIdx] || ''; setTimeout(()=>inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)); } return; }
-    if (e.key === 'ArrowDown') { if (histIdx < history.length) { histIdx++; inputEl.value = history[histIdx] || ''; setTimeout(()=>inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)); } return; }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); run(inputEl.value); inputEl.value=''; }
+    if (e.key === 'ArrowUp') { if (histIdx > 0) { histIdx--; inputEl.value = history[histIdx] || ''; } }
+    if (e.key === 'ArrowDown') { if (histIdx < history.length) { histIdx++; inputEl.value = history[histIdx] || ''; } }
   });
 
-  // Button actions
   wrap.addEventListener('click', (e) => {
     const b = e.target.closest('button.btn'); if (!b) return;
-    const act = b.getAttribute('data-act');
+    const act = b.dataset.act;
     if (act === 'run') run(inputEl.value), inputEl.value='';
     if (act === 'clear') logEl.innerHTML = '';
     if (act === 'close') api.toggle(false);
@@ -183,22 +145,27 @@
       const a = document.createElement('a'); a.href = url; a.download = 'console.log.txt'; a.click();
       setTimeout(()=>URL.revokeObjectURL(url), 1000);
     }
+    if (act === 'cache') {
+      if ('caches' in window) {
+        caches.keys().then(keys => {
+          appendRow('info', [`Cache Keys: ${keys.join(', ') || '(none)'}`]);
+          keys.forEach(key => caches.open(key).then(cache => cache.keys().then(reqs => {
+            appendRow('log', [`[${key}] ${reqs.length} items`]);
+          })));
+        });
+      } else {
+        appendRow('warn', ['Cache API not supported']);
+      }
+    }
   });
 
-  // Global toggle (Backslash)
-  function shouldIgnoreKeyTarget(el){
-    if (!el) return false;
-    const tag = (el.tagName||'').toLowerCase();
-    return tag === 'input' || tag === 'textarea' || el.isContentEditable;
-  }
   window.addEventListener('keydown', (e) => {
     if ((e.key === '\\' || e.code === 'Backslash') && !e.metaKey && !e.ctrlKey) {
-      if (shouldIgnoreKeyTarget(document.activeElement)) return; // don't fight text inputs
+      if (document.activeElement && ['input','textarea'].includes(document.activeElement.tagName.toLowerCase())) return;
       e.preventDefault(); api.toggle();
     }
   });
 
-  // API
   const api = {
     toggle(force) {
       const show = force === undefined ? !wrap.classList.contains('show') : !!force;
@@ -210,13 +177,12 @@
     log: (...a) => appendRow('log', a),
   };
 
-  window.__siteConsole = api; // expose if you wanna poke it
+  window.__siteConsole = api;
 
-  // Start hidden but alive
-  // small hello so you know it's loaded
-  appendRow('info', ['In‑Page Console loaded. Press \\ to toggle.']);
+  appendRow('info', ['Debug Console loaded. Press \\ to toggle.']);
 })();
-        </script>
+</script>
+
         <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').then(() => {
@@ -322,5 +288,6 @@ if ('serviceWorker' in navigator) {
     </script>
 </body>
 </html>
+
 
 
